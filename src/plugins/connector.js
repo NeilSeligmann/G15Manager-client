@@ -2,11 +2,25 @@
 import { reactive } from 'vue';
 
 const CATEGORIES = {
-	SYSTEM: 0
+	SYSTEM: 0,
+	THERMAL: 1,
+	KEYBOARD: 2,
 }
 
 const SYSTEM_MESSAGES = {
 	info: 0
+}
+
+const THERMAL_ACTIONS = {
+	SET_PROFILE: 0,
+	ADDMODIFY_PROFILE: 1,
+	REMOVE_PROFILE: 2,
+	RESET_PROFILES: 3,
+}
+
+const KEYBOARD_ACTIONS = {
+	BRIGHTNESS: 0,
+	ROG_KEY: 1
 }
 
 class ManagerClient {
@@ -171,8 +185,45 @@ class ManagerClient {
 		this.ws.send(JSON.stringify({
 			category,
 			action,
-			value
+			value: String(value)
 		}))
+	}
+
+	// Keyboard
+	setBrightness(level) {
+		if (typeof level !== 'number') throw new Error('"level" must be a number');
+
+		// Parse and limit level
+		level = parseInt(level, 10);
+		if (level < 0) level = 0;
+		else if (level > 3) level = 3;
+
+		return this.sendMessage({
+			category: CATEGORIES.KEYBOARD,
+			action: KEYBOARD_ACTIONS.BRIGHTNESS,
+			value: level
+		})
+	}
+
+	setRogKey(items) {
+		console.log('Set rog key!', items);
+		if (Array.isArray(items)) items = items.join(',');
+		else items = String(items);
+
+		return this.sendMessage({
+			category: CATEGORIES.KEYBOARD,
+			action: KEYBOARD_ACTIONS.ROG_KEY,
+			value: items
+		})
+	}
+
+	// Thermal
+	setCurrentProfile(profileId) {
+		return this.sendMessage({
+			category: CATEGORIES.THERMAL,
+			action: THERMAL_ACTIONS.SET_PROFILE,
+			value: String(profileId)
+		})
 	}
 }
 

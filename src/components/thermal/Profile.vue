@@ -1,12 +1,22 @@
 <template>
-	<v-card elevation="2">
-		<v-card-title>
-			<span class="mr-2">{{ profile.name }}</span>
-			<v-icon v-if="isActive" color="green">mdi-check</v-icon>
+	<v-card elevation="4" @click="setProfile">
+		<v-card-title class="pb-0">
+			<span class="">{{ profile.name }}</span>
 		</v-card-title>
 		<v-card-text>
+			<!-- Chips -->
+			<div class="mb-4">
+				<v-chip v-if="isActive" class="mr-2">
+					<v-icon color="green">mdi-check</v-icon>
+					Active
+				</v-chip>
+				<v-chip v-if="profile.fastSwitch">
+					<v-icon color="green">mdi-keyboard-f5</v-icon>
+					<span>Fast Switch</span>
+				</v-chip>
+			</div>
 			<div>
-				<b>Power Plan:</b>
+				<b>Windows Power Plan:</b>
 				{{ profile.windowsPowerPlan }}
 			</div>
 			<div>
@@ -33,6 +43,10 @@ export default {
 	},
 
 	props: {
+		index: {
+			type: Number,
+			required: true
+		},
 		profile: {
 			type: Object,
 			required: true
@@ -56,6 +70,9 @@ export default {
 	},
 
 	methods: {
+		setProfile() {
+			return this.$client.setCurrentProfile(this.index)
+		}
 	}
 }
 </script>

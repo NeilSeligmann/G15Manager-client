@@ -2,6 +2,7 @@
 	<div class="thermal-container">
 		<Profile v-for="(profile, i) in availableProfiles"
 			:key="i"
+			:index="i"
 			:profile="profile"
 			:is-active="i === currentProfile"
 			class="mb-2" />
@@ -49,5 +50,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+	.thermal-container {
+		padding: 0 1rem;
+	}
 </style>

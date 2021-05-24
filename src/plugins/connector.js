@@ -5,6 +5,9 @@ const CATEGORIES = {
 	SYSTEM: 0,
 	THERMAL: 1,
 	KEYBOARD: 2,
+	BATTERY: 3,
+	RR: 4,
+	VOLUME: 5,
 }
 
 const SYSTEM_MESSAGES = {
@@ -21,6 +24,18 @@ const THERMAL_ACTIONS = {
 const KEYBOARD_ACTIONS = {
 	BRIGHTNESS: 0,
 	ROG_KEY: 1
+}
+
+const BATTERY_ACTIONS = {
+	LIMIT: 0
+}
+
+const RR_ACTIONS = {
+	CYCLE: 0
+}
+
+const VOLUME_ACTIONS = {
+	TOGGLE_MIC: 0
 }
 
 class ManagerClient {
@@ -223,6 +238,36 @@ class ManagerClient {
 			category: CATEGORIES.THERMAL,
 			action: THERMAL_ACTIONS.SET_PROFILE,
 			value: String(profileId)
+		})
+	}
+
+	// Battery
+	setBatteryLimit(limit) {
+		limit = parseInt(limit, 10);
+
+		if (limit < 20) limit = 20
+		else if (limit > 100) limit = 100;
+
+		return this.sendMessage({
+			category: CATEGORIES.BATTERY,
+			action: BATTERY_ACTIONS.LIMIT,
+			value: limit
+		})
+	}
+
+	// Screen
+	cycleRefreshRate() {
+		return this.sendMessage({
+			category: CATEGORIES.RR,
+			action: RR_ACTIONS.CYCLE
+		})
+	}
+
+	// Volume
+	toggleMic() {
+		return this.sendMessage({
+			category: CATEGORIES.VOLUME,
+			action: VOLUME_ACTIONS.TOGGLE_MIC
 		})
 	}
 }

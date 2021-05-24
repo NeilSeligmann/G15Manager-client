@@ -27,7 +27,7 @@
 
 			<v-tabs-items v-model="tab">
 				<v-tab-item value="general">
-					{{ configInfo }}
+					<General v-if="configInfo" :config-info="configInfo" />
 				</v-tab-item>
 				<v-tab-item value="thermal">
 					<Thermal v-if="configInfo.thermal" :thermal="configInfo.thermal" />
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import General from './components/general/General';
 import Thermal from './components/thermal/Thermal';
 import Keyboard from './components/keyboard/Keyboard';
 
@@ -48,6 +49,7 @@ export default {
 	name: 'App',
 
 	components: {
+		General,
 		Thermal,
 		Keyboard,
 	},

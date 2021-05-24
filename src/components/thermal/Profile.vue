@@ -6,13 +6,13 @@
 		<v-card-text>
 			<!-- Chips -->
 			<div class="mb-4">
-				<v-chip v-if="isActive" class="mr-2">
+				<v-chip>
+					<v-icon :color="profile.fastSwitch ? `green` : `red`">mdi-keyboard-f5</v-icon>
+					<span>{{ profile.fastSwitch ? `Fast Switch` : `Manual` }}</span>
+				</v-chip>
+				<v-chip v-if="isActive" class="ml-2">
 					<v-icon color="green">mdi-check</v-icon>
 					Active
-				</v-chip>
-				<v-chip v-if="profile.fastSwitch">
-					<v-icon color="green">mdi-keyboard-f5</v-icon>
-					<span>Fast Switch</span>
 				</v-chip>
 			</div>
 			<div>

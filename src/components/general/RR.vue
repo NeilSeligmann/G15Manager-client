@@ -14,7 +14,7 @@
 				<v-btn color="primary"
 					@click="cycleRefreshRate">
 					<v-icon>mdi-refresh</v-icon>
-					Cycle
+					Switch
 				</v-btn>
 			</div>
 		</v-card-text>

@@ -5,8 +5,8 @@
 				<v-tabs-slider></v-tabs-slider>
 
 				<v-tab href="#general">
-					General
-					<v-icon>mdi-cog</v-icon>
+					Home
+					<v-icon>mdi-home</v-icon>
 				</v-tab>
 
 				<v-tab href="#thermal">
@@ -19,10 +19,10 @@
 					<v-icon>mdi-keyboard</v-icon>
 				</v-tab>
 
-				<!-- <v-tab href="#tab-3">
-					Nearby
-					<v-icon>mdi-account-box</v-icon>
-				</v-tab> -->
+				<v-tab href="#settings">
+					Settings
+					<v-icon>mdi-cog</v-icon>
+				</v-tab>
 			</v-tabs>
 
 			<v-tabs-items v-model="tab">
@@ -35,6 +35,9 @@
 				<v-tab-item value="keyboard">
 					<Keyboard v-if="configInfo.keyboard" :keyboard="configInfo.keyboard" />
 				</v-tab-item>
+				<v-tab-item value="settings">
+					<Settings v-if="configInfo" :config-info="configInfo" />
+				</v-tab-item>
 			</v-tabs-items>
 		</v-main>
 	</v-app>
@@ -44,6 +47,7 @@
 import General from './components/general/General';
 import Thermal from './components/thermal/Thermal';
 import Keyboard from './components/keyboard/Keyboard';
+import Settings from './components/settings/Settings';
 
 export default {
 	name: 'App',
@@ -52,11 +56,18 @@ export default {
 		General,
 		Thermal,
 		Keyboard,
+		Settings,
 	},
 
 	data: () => ({
 		tab: 0
 	}),
+
+	watch: {
+		tab() {
+			window.location.hash = this.tab
+		}
+	},
 
 	computed: {
 		connectorState() {
@@ -65,6 +76,19 @@ export default {
 		configInfo() {
 			if (!this.connectorState) return null;
 			return this.connectorState.configInfo;
+		}
+	},
+
+	created() {
+		this.goToCurrentHash();
+	},
+
+	methods: {
+		goToCurrentHash() {
+			const currentHash = window.location.hash.substr(1);
+			if (!currentHash) return;
+
+			this.tab = currentHash;
 		}
 	}
 };

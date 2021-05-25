@@ -8,6 +8,7 @@ const CATEGORIES = {
 	BATTERY: 3,
 	RR: 4,
 	VOLUME: 5,
+	AIDENOISE: 6
 }
 
 const SYSTEM_MESSAGES = {
@@ -23,7 +24,8 @@ const THERMAL_ACTIONS = {
 
 const KEYBOARD_ACTIONS = {
 	BRIGHTNESS: 0,
-	ROG_KEY: 1
+	ROG_KEY: 1,
+	TOGGLE_TOUCHPAD: 2,
 }
 
 const BATTERY_ACTIONS = {
@@ -36,6 +38,12 @@ const RR_ACTIONS = {
 
 const VOLUME_ACTIONS = {
 	TOGGLE_MIC: 0
+}
+
+const AIDENOISE_ACTIONS = {
+	SET_STATE: 0,
+	SET_PATH: 1,
+	RESET_PATH: 2,
 }
 
 class ManagerClient {
@@ -232,6 +240,13 @@ class ManagerClient {
 		})
 	}
 
+	toggleTouchpad() {
+		return this.sendMessage({
+			category: CATEGORIES.KEYBOARD,
+			action: KEYBOARD_ACTIONS.TOGGLE_TOUCHPAD
+		})
+	}
+
 	// Thermal
 	setCurrentProfile(profileId) {
 		return this.sendMessage({
@@ -268,6 +283,36 @@ class ManagerClient {
 		return this.sendMessage({
 			category: CATEGORIES.VOLUME,
 			action: VOLUME_ACTIONS.TOGGLE_MIC
+		})
+	}
+
+	// Denoise
+	setDenoiseState(state) {
+		if (typeof state === 'undefined' || state === null) {
+			state = ''
+		} else {
+			state = state ? '1' : '0'
+		}
+
+		return this.sendMessage({
+			category: CATEGORIES.AIDENOISE,
+			action: AIDENOISE_ACTIONS.SET_STATE,
+			value: state
+		})
+	}
+
+	setDenoisePath(newPath) {
+		return this.sendMessage({
+			category: CATEGORIES.AIDENOISE,
+			action: AIDENOISE_ACTIONS.SET_PATH,
+			value: newPath
+		})
+	}
+
+	resetDenoisePath() {
+		return this.sendMessage({
+			category: CATEGORIES.AIDENOISE,
+			action: AIDENOISE_ACTIONS.RESET_PATH
 		})
 	}
 }

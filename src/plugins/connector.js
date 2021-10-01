@@ -119,16 +119,18 @@ class ManagerClient {
 		// Reset skipped hearbeats counter
 		this.heartbeat.skipped = 0;
 
+		// console.log('onWebsocketMessage', message)
+
 		if (message.data === 'alive') {
-			console.log('alive')
+			// console.log('alive')
 			return;
 		}
 
-		console.log('WS: On Message!')
-		console.log(message)
+		// console.log('WS: On Message!')
+		// console.log(message)
 
 		const parsed = JSON.parse(message.data);
-		console.log(parsed);
+		// console.log(parsed);
 
 		if (!parsed || typeof parsed.action !== 'number') {
 			console.error('Invalid response!')

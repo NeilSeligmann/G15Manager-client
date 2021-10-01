@@ -6,7 +6,7 @@
 			Refresh Rate
 		</v-card-title>
 		<v-card-text>
-			<div class="rr-container mt-3">
+			<div class="rr-container mt-3 d-flex flex-column justify-center">
 				<div class="rr-display">
 					<v-icon>mdi-monitor</v-icon>
 					{{ configInfo.rr.currentRefreshRate }}Hz
@@ -71,7 +71,9 @@ export default {
 		}
 
 		button {
+			margin-top: 0.5rem;
 			margin-left: auto;
+			margin-right: auto;
 		}
 	}
 </style>

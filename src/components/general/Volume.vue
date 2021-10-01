@@ -11,8 +11,8 @@
 					<v-icon>{{ micIcon }}</v-icon>
 					{{ isMicEnabled ? 'Active' : 'Muted' }}
 				</div>
-				<v-btn :color="isMicEnabled ? 'grey' : 'red'"
-					:outlined="isMicEnabled"
+				<v-btn color="red"
+					:outlined="!isMicEnabled"
 					width="100px"
 					@click="toggleMic">
 					{{ isMicEnabled ? 'Mute' : 'Unmute' }}
@@ -20,8 +20,9 @@
 			</div>
 			<div style="justify-content: center;display: flex;">
 				<v-btn class="mt-2"
-					color="primary"
+					color="red"
 					small
+					text
 					@click="toggleDenoise">
 					{{ isDenoiseEnabled ? 'Disable' : 'Enable' }} Denoise AI
 				</v-btn>

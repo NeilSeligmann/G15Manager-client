@@ -17,23 +17,36 @@
 		<h3>ROG Key</h3>
 		<div class="subtitle-2">Pressing multiple times the ROG key will open the application in that slot.</div>
 		<v-list>
-			<!-- ROG Items -->
-			<v-list-item v-for="(item, i) in rogItems"
-				:key="i"
-				class="rog-item-container">
-				<v-list-item-content>
-					<v-list-item-title class="rog-item">
-						<span class="rog-item-counter">{{ i + 1 }}.</span>
-						<v-text-field v-model="rogItems[i]" class="ml-2" />
-						<v-btn
-							icon
-							color="red"
-							@click="removeRogItem(i)">
-							<v-icon>mdi-delete</v-icon>
-						</v-btn>
-					</v-list-item-title>
-				</v-list-item-content>
-			</v-list-item>
+			<draggable v-model="rogItems"
+				group="people"
+				@start="drag=true"
+				@end="drag=false">
+				<!-- ROG Items -->
+				<v-list-item v-for="(item, i) in rogItems"
+					:key="rogItems[i]"
+					class="rog-item-container">
+					<v-list-item-content>
+						<v-list-item-title class="rog-item">
+							<span class="rog-item-handle">
+								<v-icon>mdi-drag-vertical</v-icon>
+							</span>
+
+							<span class="rog-item-counter">
+								{{ i + 1 }}.
+							</span>
+
+							<v-text-field v-model="rogItems[i]" class="ml-2" />
+
+							<v-btn
+								icon
+								color="red"
+								@click="removeRogItem(i)">
+								<v-icon>mdi-delete</v-icon>
+							</v-btn>
+						</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+			</draggable>
 
 			<!-- Add item -->
 			<v-list-item>
@@ -52,23 +65,28 @@
 		</v-list>
 
 		<!-- Save items -->
-		<div class="rog-actions mr-4">
+		<div class="rog-actions mb-4">
 			<v-btn
 				:disabled="!isRogDirty"
 				color="primary"
 				@click="saveRogItems">
 				<v-icon left>mdi-content-save</v-icon>
-				Save
+				Save Bindings
 			</v-btn>
 		</div>
+
+		<v-divider />
 	</div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
 	name: 'Keyboard',
 
 	components: {
+		draggable,
 	},
 
 	props: {
@@ -128,6 +146,21 @@ export default {
 		display: flex;
 	}
 
+	.rog-item-handle {
+		justify-content: center;
+		display: flex;
+		cursor: move; /* fallback if grab cursor is unsupported */
+		cursor: grab;
+		cursor: -moz-grab;
+		cursor: -webkit-grab;
+
+		&:active {
+			cursor: grabbing;
+			cursor: -moz-grabbing;
+			cursor: -webkit-grabbing;
+		}
+	}
+
 	.rog-item-counter {
 		display: flex;
 		flex-direction: column;
@@ -136,6 +169,6 @@ export default {
 
 	.rog-actions {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: center;
 	}
 </style>

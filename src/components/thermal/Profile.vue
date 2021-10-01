@@ -1,7 +1,10 @@
 <template>
 	<v-card elevation="4" @click="setProfile">
 		<v-card-title class="pb-0">
-			<span class="">{{ profile.name }}</span>
+			<v-switch :value="isActive"
+				:disabled="isActive"
+				@change="onSwitch"/>
+			<span class="profile-name">{{ profile.name }}</span>
 		</v-card-title>
 		<v-card-text>
 			<!-- Chips -->
@@ -72,11 +75,14 @@ export default {
 	methods: {
 		setProfile() {
 			return this.$client.setCurrentProfile(this.index)
+		},
+		onSwitch(value) {
+			if (!value) return;
+			this.setProfile();
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
-
 </style>

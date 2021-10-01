@@ -1,6 +1,6 @@
 <template>
 	<v-app>
-		<v-main>
+		<v-main v-if="isConnected">
 			<v-tabs v-model="tab" centered>
 				<v-tabs-slider></v-tabs-slider>
 
@@ -40,6 +40,10 @@
 				</v-tab-item>
 			</v-tabs-items>
 		</v-main>
+		<v-main v-else>
+			Disconnected! <br />
+			status: {{ this.connectorState.status }}
+		</v-main>
 	</v-app>
 </template>
 
@@ -76,6 +80,10 @@ export default {
 		configInfo() {
 			if (!this.connectorState) return null;
 			return this.connectorState.configInfo;
+		},
+		isConnected() {
+			if (!this.connectorState) return false;
+			return this.connectorState.status === 1;
 		}
 	},
 

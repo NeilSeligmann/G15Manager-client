@@ -7,8 +7,8 @@
 		</v-card-title>
 		<v-card-text>
 			<div class="mic-container mt-3">
-				<div class="mic-display">
-					<v-icon>{{ micIcon }}</v-icon>
+				<div class="mic-display" :class="[ `${micColor}--text` ]">
+					<v-icon :color="micColor">{{ micIcon }}</v-icon>
 					{{ isMicEnabled ? 'Active' : 'Muted' }}
 				</div>
 				<v-btn color="red"
@@ -20,11 +20,11 @@
 			</div>
 			<div style="justify-content: center;display: flex;">
 				<v-btn class="mt-2"
-					color="red"
 					small
 					text
-					@click="toggleDenoise">
-					{{ isDenoiseEnabled ? 'Disable' : 'Enable' }} Denoise AI
+					@click="goToTab('settings')">
+					Denoise AI
+					<v-icon x-small>mdi-arrow-right</v-icon>
 				</v-btn>
 			</div>
 		</v-card-text>
@@ -55,6 +55,10 @@ export default {
 		micIcon() {
 			return `mdi-microphone${this.isMicEnabled ? '' : '-off'}`
 		},
+		micColor() {
+			if (this.isMicEnabled) return 'primary';
+			return 'red';
+		},
 		isDenoiseEnabled() {
 			return this.configInfo.denoise.isEnabled;
 		}
@@ -70,8 +74,11 @@ export default {
 		toggleMic() {
 			this.$client.toggleMic();
 		},
-		toggleDenoise() {
-			this.$client.setDenoiseState();
+		// toggleDenoise() {
+		// 	this.$client.setDenoiseState();
+		// },
+		goToTab(value) {
+			this.$emit('goToTab', value)
 		}
 	}
 }

@@ -27,7 +27,9 @@
 
 			<v-tabs-items v-model="tab">
 				<v-tab-item value="general">
-					<General v-if="configInfo" :config-info="configInfo" />
+					<General v-if="configInfo"
+						:config-info="configInfo"
+						@goToTab="goToTab" />
 				</v-tab-item>
 				<v-tab-item value="thermal">
 					<Thermal v-if="configInfo.thermal" :thermal="configInfo.thermal" />
@@ -97,6 +99,9 @@ export default {
 			if (!currentHash) return;
 
 			this.tab = currentHash;
+		},
+		goToTab(value) {
+			this.tab = value;
 		}
 	}
 };

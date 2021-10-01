@@ -13,7 +13,8 @@
 		<!-- Refresh Rate -->
 		<Volume v-if="configInfo.volume"
 			:config-info="configInfo"
-			class="ml-3 mr-3" />
+			class="ml-3 mr-3"
+			@goToTab="goToTab" />
 	</div>
 </template>
 
@@ -51,6 +52,9 @@ export default {
 	},
 
 	methods: {
+		goToTab(value) {
+			this.$emit('goToTab', value)
+		}
 	}
 }
 </script>

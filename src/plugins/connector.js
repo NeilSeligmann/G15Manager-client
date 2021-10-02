@@ -1,5 +1,6 @@
 // const { createApp, reactive } = Vue
-import { reactive } from 'vue';
+// import { reactive } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 
 const CATEGORIES = {
 	SYSTEM: 0,
@@ -18,8 +19,9 @@ const SYSTEM_MESSAGES = {
 const THERMAL_ACTIONS = {
 	SET_PROFILE: 0,
 	ADDMODIFY_PROFILE: 1,
-	REMOVE_PROFILE: 2,
-	RESET_PROFILES: 3,
+	MOVE_PROFILE: 2,
+	REMOVE_PROFILE: 3,
+	RESET_PROFILES: 4,
 }
 
 const KEYBOARD_ACTIONS = {
@@ -68,6 +70,8 @@ class ManagerClient {
 			shouldReconnect: true,
 			delay: 10000
 		}
+
+		this.pendingAcks = new Map();
 
 		this.state = this.vue.observable({
 			// -1 -> Closed
@@ -126,6 +130,19 @@ class ManagerClient {
 			return;
 		}
 
+		if (typeof message.data === 'string' && message.data.includes('ack ')) {
+			const id = message.data.replace('ack ', '');
+			const pendingAck = this.pendingAcks.get(id);
+			if (!pendingAck) return;
+
+			// Clear timeout
+			clearTimeout(pendingAck.promise.timeout);
+			// Resolve promise
+			pendingAck.promise.resolve(true);
+
+			return;
+		}
+
 		// console.log('WS: On Message!')
 		// console.log(message)
 
@@ -146,6 +163,13 @@ class ManagerClient {
 				console.warn(`Unhandled response of action ${parsed.action}`)
 				break;
 		}
+	}
+
+	onWebsocketAckTimeout(id) {
+		const ack = this.pendingAcks.get(id);
+		if (!ack) return;
+
+		ack.promise.reject(new Error(`ACK response timed out! (ID: ${id})`));
 	}
 
 	// ---------
@@ -207,11 +231,25 @@ class ManagerClient {
 	}
 
 	sendMessage({ category = CATEGORIES.SYSTEM, action, value } = {}) {
-		this.ws.send(JSON.stringify({
-			category,
-			action,
-			value: String(value)
-		}))
+		return new Promise((resolve, reject) => {
+			if (typeof value === 'object') {
+				value = JSON.stringify(value);
+			}
+
+			const id = uuidv4();
+
+			this.pendingAcks.set(id, {
+				promise: { resolve, reject },
+				timeout: setTimeout(() => { this.onWebsocketAckTimeout(id) }, 3000)
+			})
+
+			this.ws.send(JSON.stringify({
+				id,
+				category,
+				action,
+				value: String(value)
+			}))
+		})
 	}
 
 	// Keyboard
@@ -231,7 +269,6 @@ class ManagerClient {
 	}
 
 	setRogKey(items) {
-		console.log('Set rog key!', items);
 		if (Array.isArray(items)) items = items.join(',');
 		else items = String(items);
 
@@ -256,6 +293,27 @@ class ManagerClient {
 			action: THERMAL_ACTIONS.SET_PROFILE,
 			value: String(profileId)
 		})
+	}
+
+	async moveProfile(fromId, targetId) {
+		// Move profile locally for a better user experience
+		const thermalProfiles = this.state.configInfo.thermal.profiles.available;
+		const tmp = JSON.parse(JSON.stringify(thermalProfiles[targetId]));
+
+		thermalProfiles[targetId] = thermalProfiles[fromId];
+		thermalProfiles[fromId] = tmp;
+
+		this.state.configInfo.thermal.profiles.available = thermalProfiles;
+
+		// Request server to move the profile
+		// await this.sendMessage({
+		// 	category: CATEGORIES.THERMAL,
+		// 	action: THERMAL_ACTIONS.MOVE_PROFILE,
+		// 	value: {
+		// 		fromId,
+		// 		targetId
+		// 	}
+		// })
 	}
 
 	// Battery

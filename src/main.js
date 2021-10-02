@@ -8,6 +8,33 @@ Vue.config.productionTip = false
 
 Vue.use(connector);
 
+// E-Charts
+import ECharts from 'vue-echarts'
+import { use } from 'echarts/core'
+import {
+	CanvasRenderer
+} from 'echarts/renderers'
+import {
+	LineChart
+} from 'echarts/charts'
+import {
+	GridComponent,
+	TooltipComponent,
+	GraphicComponent
+} from 'echarts/components'
+
+use([
+	CanvasRenderer,
+	LineChart,
+	GridComponent,
+	TooltipComponent,
+	GraphicComponent
+]);
+
+Vue.component('v-chart', ECharts)
+
+// Main Vue
+
 new Vue({
 	vuetify,
 	render: h => h(App)

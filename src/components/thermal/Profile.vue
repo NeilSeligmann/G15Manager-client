@@ -1,12 +1,32 @@
 <template>
-	<v-card elevation="4" @click="setProfile">
+	<v-card elevation="4">
 		<v-card-title class="pb-0">
-			<v-switch :value="isActive"
-				:disabled="isActive"
-				@change="onSwitch"/>
 			<span class="profile-name">{{ profile.name }}</span>
+			<v-btn
+				class="profile-edit-btn"
+				:color="isEditing ? 'red' : 'primary'"
+				@click.stop="isEditing = !isEditing">
+				<v-icon left>{{ isEditing ? 'mdi-close' : 'mdi-pencil' }}</v-icon>
+				{{ isEditing ? 'Cancel' : 'Edit' }}
+			</v-btn>
 		</v-card-title>
-		<v-card-text>
+		<!-- Editing -->
+		<v-card-text v-if="isEditing">
+			<v-row>
+				<v-col>
+					<!-- CPU Fan Curve -->
+					<v-text-field label="CPU Fan Curve" v-model="pendingChanges.cpuFanCurve" />
+					<ProfileChart v-model="pendingChanges.cpuFanCurve" />
+				</v-col>
+				<v-col>
+					<!-- GPU Fan Curve -->
+					<v-text-field label="GPU Fan Curve" v-model="pendingChanges.gpuFanCurve" />
+					<ProfileChart v-model="pendingChanges.gpuFanCurve" />
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<!-- Non-editing -->
+		<v-card-text v-else>
 			<!-- Chips -->
 			<div class="mb-4">
 				<v-chip>
@@ -39,10 +59,13 @@
 </template>
 
 <script>
+import ProfileChart from './ProfileChart.vue';
+
 export default {
 	name: 'Profiles',
 
 	components: {
+		ProfileChart
 	},
 
 	props: {
@@ -60,8 +83,19 @@ export default {
 		}
 	},
 
-	data: () => ({
-	}),
+	data: function () {
+		return {
+			isEditing: false,
+			pendingChanges: {
+				name: 'NAME',
+				fastSwitch: true,
+				throttlePlans: 0,
+				windowsPowerPlan: 0,
+				cpuFanCurve: '',
+				gpuFanCurve: '',
+			}
+		}
+	},
 
 	computed: {
 	},
@@ -70,19 +104,29 @@ export default {
 	},
 
 	mounted() {
+		this.loadEditorFromProfile();
 	},
 
 	methods: {
-		setProfile() {
+		loadEditorFromProfile() {
+			this.pendingChanges = JSON.parse(JSON.stringify(this.profile));
+		},
+		setProfile(forced = false) {
+			if (typeof forced !== 'boolean') forced = false;
+
+			if (!forced && this.isEditing) return null;
 			return this.$client.setCurrentProfile(this.index)
 		},
-		onSwitch(value) {
-			if (!value) return;
-			this.setProfile();
-		}
+		editProfile() {
+			this.$emit('editProfile', this.index);
+			this.isEditing = true;
+		},
 	}
 }
 </script>
 
 <style lang="scss" scoped>
+	.profile-edit-btn {
+		margin-left: auto;
+	}
 </style>

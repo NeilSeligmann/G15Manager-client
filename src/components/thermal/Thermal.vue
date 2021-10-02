@@ -1,11 +1,13 @@
 <template>
 	<div class="thermal-container">
-		<Profile v-for="(profile, i) in availableProfiles"
-			:key="i"
-			:index="i"
-			:profile="profile"
-			:is-active="i === currentProfile"
-			class="mb-2" />
+		<div class="profiles-container">
+			<Profile v-for="(profile, i) in availableProfiles"
+				:key="i"
+				:index="i"
+				:profile="profile"
+				:is-active="i === currentProfile"
+				class="mb-2" />
+		</div>
 	</div>
 </template>
 

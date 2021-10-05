@@ -18,9 +18,7 @@
 		<div class="subtitle-2">Pressing multiple times the ROG key will open the application in that slot.</div>
 		<v-list>
 			<draggable v-model="rogItems"
-				group="people"
-				@start="drag=true"
-				@end="drag=false">
+				group="people">
 				<!-- ROG Items -->
 				<v-list-item v-for="(item, i) in rogItems"
 					:key="rogItems[i]"

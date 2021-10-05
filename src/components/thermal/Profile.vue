@@ -3,7 +3,17 @@
 		<v-card-title class="pb-0">
 			<span class="profile-name">{{ profile.name }}</span>
 			<v-btn
+				v-if="isEditing"
+				class="profile-save-btn"
+				color="green"
+				:loading="isSaving"
+				@click.stop="saveProfile">
+				<v-icon left>mdi-content-save</v-icon>
+				Save
+			</v-btn>
+			<v-btn
 				class="profile-edit-btn"
+				:class="{ 'is-editing': isEditing }"
 				:color="isEditing ? 'red' : 'primary'"
 				@click.stop="isEditing = !isEditing">
 				<v-icon left>{{ isEditing ? 'mdi-close' : 'mdi-pencil' }}</v-icon>
@@ -38,34 +48,50 @@
 					Active
 				</v-chip>
 			</div>
-			<div>
-				<b>Windows Power Plan:</b>
-				{{ profile.windowsPowerPlan }}
-			</div>
-			<div>
-				<b>Throttle Plan:</b>
-				{{ profile.throttlePlan }}
-			</div>
-			<div>
-				<b>CPU Fan Curve:</b>
-				{{ profile.cpuFanCurve }}
-			</div>
-			<div>
-				<b>GPU Fan Curve:</b>
-				{{ profile.gpuFanCurve }}
-			</div>
+
+			<v-row>
+				<v-col>
+					<div>
+						<b>Windows Power Plan:</b>
+						{{ profile.windowsPowerPlan }}
+					</div>
+					<div>
+						<b>Throttle Plan:</b>
+						{{ profile.throttlePlan }}
+					</div>
+					<div v-if="!showFanCurves">
+						<b>CPU Fan Curve:</b>
+						{{ profile.cpuFanCurve }}
+					</div>
+					<div v-if="!showFanCurves">
+						<b>GPU Fan Curve:</b>
+						{{ profile.gpuFanCurve }}
+					</div>
+				</v-col>
+			</v-row>
+			<v-row v-if="showFanCurves">
+				<!-- Preview Charts -->
+				<v-col>
+					<ProfileChartPreview :value="profile.cpuFanCurve" />
+				</v-col>
+				<v-col>
+					<ProfileChartPreview :value="profile.gpuFanCurve" />
+				</v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
 
 <script>
 import ProfileChart from './ProfileChart.vue';
+import ProfileChartPreview from './ProfileChartPreview.vue';
 
 export default {
 	name: 'Profiles',
 
 	components: {
-		ProfileChart
+		ProfileChart,
+		ProfileChartPreview
 	},
 
 	props: {
@@ -80,12 +106,17 @@ export default {
 		isActive: {
 			type: Boolean,
 			required: true
+		},
+		showFanCurves: {
+			type: Boolean,
+			default: true
 		}
 	},
 
 	data: function () {
 		return {
 			isEditing: false,
+			isSaving: false,
 			pendingChanges: {
 				name: 'NAME',
 				fastSwitch: true,
@@ -118,15 +149,31 @@ export default {
 			return this.$client.setCurrentProfile(this.index)
 		},
 		editProfile() {
+			this.loadEditorFromProfile();
 			this.$emit('editProfile', this.index);
 			this.isEditing = true;
 		},
+		async saveProfile() {
+			this.isSaving = true;
+			await this.$client.addModifyProfile(this.index, this.pendingChanges);
+			this.isSaving = false;
+			this.isEditing = false;
+		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
+	.profile-save-btn {
+		margin-left: auto;
+		margin-right: 1rem;
+	}
+
 	.profile-edit-btn {
 		margin-left: auto;
+
+		&.is-editing {
+			margin-left: 0;
+		}
 	}
 </style>

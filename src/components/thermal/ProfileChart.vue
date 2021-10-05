@@ -9,8 +9,8 @@
 
 <script>
 import Vue from 'vue';
+import thermalChartMixin from './thermalChart.mixin';
 
-const chartSymbolSize = 20;
 const MIN = 0;
 const MAX_X = 110;
 const MAX_Y = 100;
@@ -18,37 +18,24 @@ const MAX_Y = 100;
 export default {
 	name: 'ProfileChart',
 
+	mixins: [
+		thermalChartMixin
+	],
+
 	components: {
 	},
 
 	props: {
-		value: {
-			type: String,
-			required: true
-		}
 	},
 
 	data: () => ({
-		chartData: [],
 		isDragging: false
 	}),
 
 	computed: {
-		chartSeries() {
-			return {
-				id: 'a',
-				smooth: false,
-				type: 'line',
-				symbolSize: chartSymbolSize,
-				data: this.chartData
-			};
-		},
 		chartOptions() {
 			return {
-				// title: {
-				// 	text: 'Traffic Sources',
-				// 	left: 'center'
-				// },
+				animation: false,
 				xAxis: {
 					name: 'Temperature',
 					nameLocation: 'center',
@@ -61,7 +48,6 @@ export default {
 					axisLabel: {
 						formatter: '{value}°c'
 					}
-					// axisLine: { onZero: false }
 				},
 				yAxis: {
 					name: 'Fan Speed',
@@ -75,21 +61,22 @@ export default {
 					axisLabel: {
 						formatter: '{value}%'
 					}
-					// axisLine: { onZero: false }
 				},
 				series: [
 					this.chartSeries
-				]
+				],
+				tooltip: {
+					triggerOn: 'none',
+					formatter: function (params) {
+						return `Temp: ${params.data[0]}°c<br>Fan: ${params.data[1]}%`;
+					}
+				},
 			}
 		}
 	},
 
 	watch: {
-		value() {
-			this.updateDataFromModel();
-		},
 		isDragging() {
-			console.log('isDragging changed:', this.isDragging)
 			if (this.isDragging) return;
 			this.refreshDraggablePoints();
 		}
@@ -97,38 +84,13 @@ export default {
 
 	mounted() {
 		Vue.nextTick(() => {
+			this.updateDataFromModel();
 			this.refreshDraggablePoints();
 			this.updateChart();
 		})
 	},
 
-	updated() {
-		// this.refreshDraggablePoints();
-		// this.updateChart();
-	},
-
 	methods: {
-		updateDataFromModel() {
-			const splitted = this.value.split(',');
-			if (!splitted || splitted.length < 1) return;
-
-			let finalData = [];
-
-			for (const item of splitted) {
-				const xy = item.replace('c', '')
-					.replace('%', '')
-					.split(':');
-				finalData.push([parseInt(xy[0], 10), parseInt(xy[1], 10)]);
-			}
-
-			this.chartData = finalData;
-
-			if (!this.isDragging) {
-				this.refreshDraggablePoints();
-			}
-
-			this.updateChart();
-		},
 		refreshDraggablePoints() {
 			const superThis = this;
 
@@ -139,28 +101,29 @@ export default {
 					shape: {
 						cx: 0,
 						cy: 0,
-						r: (chartSymbolSize + 4) / 2
+						r: (superThis.chartSymbolSize + 5) / 2
 					},
-					invisible: false,
+					invisible: true,
 					draggable: true,
 					ondrag: function (dx, dy) {
 						// Call event
 						superThis.onPointDragging(dataIndex, [this.x, this.y], this);
 					},
 					onmousedown: function () {
-						console.log('onmousedown!')
 						superThis.isDragging = true;
 					},
 					onmouseup: function () {
-						console.log('onmouseup!')
 						superThis.isDragging = false;
+					},
+					onmousemove: function () {
+						superThis.showTooltip(dataIndex);
+					},
+					onmouseout: function () {
+						superThis.hideTooltip(dataIndex);
 					},
 					z: 100
 				};
 			});
-		},
-		updateChart() {
-			this.$refs.chart.setOption(this.chartOptions)
 		},
 		onPointDragging(dataIndex, pos, dragPoint) {
 			const finalPos = this.$refs.chart.convertFromPixel('grid', pos);
@@ -187,6 +150,18 @@ export default {
 		updateVModel() {
 			let xyStrings = this.chartData.map(point => `${point[0]}c:${point[1]}%`);
 			this.$emit('input', xyStrings.join(','));
+		},
+		showTooltip(dataIndex) {
+			this.$refs.chart.dispatchAction({
+				type: 'showTip',
+				seriesIndex: 0,
+				dataIndex
+			});
+		},
+		hideTooltip(dataIndex) {
+			this.$refs.chart.dispatchAction({
+				type: 'hideTip'
+			});
 		}
 	}
 }

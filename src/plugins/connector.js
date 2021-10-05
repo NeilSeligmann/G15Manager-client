@@ -309,7 +309,7 @@ class ManagerClient {
 		})
 	}
 
-	async saveProfile(profileId, config) {
+	async addModifyProfile(profileId, config) {
 		await this.sendMessage({
 			category: CATEGORIES.THERMAL,
 			action: THERMAL_ACTIONS.ADDMODIFY_PROFILE,

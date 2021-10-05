@@ -296,24 +296,28 @@ class ManagerClient {
 	}
 
 	async moveProfile(fromId, targetId) {
-		// Move profile locally for a better user experience
-		const thermalProfiles = this.state.configInfo.thermal.profiles.available;
-		const tmp = JSON.parse(JSON.stringify(thermalProfiles[targetId]));
-
-		thermalProfiles[targetId] = thermalProfiles[fromId];
-		thermalProfiles[fromId] = tmp;
-
-		this.state.configInfo.thermal.profiles.available = thermalProfiles;
+		// TODO: Move profile locally for a better user experience
 
 		// Request server to move the profile
-		// await this.sendMessage({
-		// 	category: CATEGORIES.THERMAL,
-		// 	action: THERMAL_ACTIONS.MOVE_PROFILE,
-		// 	value: {
-		// 		fromId,
-		// 		targetId
-		// 	}
-		// })
+		await this.sendMessage({
+			category: CATEGORIES.THERMAL,
+			action: THERMAL_ACTIONS.MOVE_PROFILE,
+			value: {
+				fromId,
+				targetId
+			}
+		})
+	}
+
+	async saveProfile(profileId, config) {
+		await this.sendMessage({
+			category: CATEGORIES.THERMAL,
+			action: THERMAL_ACTIONS.ADDMODIFY_PROFILE,
+			value: {
+				profileId,
+				...config
+			}
+		})
 	}
 
 	// Battery

@@ -1,0 +1,54 @@
+name: Build Release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    name: Create release-artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Install Node v14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Artifacts
+        run: NODE_ENV=production npm run build
+
+      - name: Archive Build
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: ./release.zip
+          directory: 'dist'
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          tag_name: ${{ github.ref }}
+          release_name: G15 Client ${{ github.ref }}
+          # body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload Release Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: G15_Client_${{ github.ref }}.zip
+          asset_content_type: application/gzip
+

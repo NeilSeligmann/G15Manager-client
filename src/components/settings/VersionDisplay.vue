@@ -18,11 +18,13 @@
 					</v-col>
 					<v-col>
 						<div class="version-action">
-							<v-btn v-if="isUpdateAvailable"
+							<v-btn v-if="isUpdateAvailable || btnText"
 								color="primary"
+								:href="isManual ? data.manualUrl : null"
+								target="_blank"
 								:loading="loading"
 								@click="onClick">
-								Update!
+								{{ btnText || 'Update!' }}
 							</v-btn>
 						</div>
 					</v-col>
@@ -53,6 +55,14 @@ export default {
 		loading: {
 			type: Boolean,
 			default: false
+		},
+		isManual: {
+			type: Boolean,
+			default: false
+		},
+		btnText: {
+			type: String,
+			default: null
 		}
 	},
 

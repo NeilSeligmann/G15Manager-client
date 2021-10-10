@@ -8,10 +8,13 @@
 			<VersionDisplay name="Client"
 				:data="versionData.client"
 				:loading="isLoadingClient"
+				:btn-text="shouldReload ? 'Reload' : null"
 				@click="updateClient" />
 
 			<!-- Manager/Server Version -->
-			<VersionDisplay name="Server" :data="versionData.server" />
+			<VersionDisplay name="Server"
+				:data="versionData.server"
+				is-manual />
 
 		</v-card-text>
 	</v-card>
@@ -35,7 +38,8 @@ export default {
 	},
 
 	data: () => ({
-		isLoadingClient: false
+		isLoadingClient: false,
+		shouldReload: false
 	}),
 
 	computed: {
@@ -52,6 +56,11 @@ export default {
 
 	methods: {
 		async updateClient() {
+			if (this.shouldReload) {
+				window.location.reload();
+				return;
+			}
+
 			if (this.isLoadingClient) {
 				return;
 			}
@@ -59,6 +68,7 @@ export default {
 			this.isLoadingClient = true;
 			await this.$client.updateClient();
 			this.isLoadingClient = false;
+			this.shouldReload = true;
 		}
 	}
 }

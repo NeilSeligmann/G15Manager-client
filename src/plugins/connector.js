@@ -51,9 +51,11 @@ const AIDENOISE_ACTIONS = {
 
 class ManagerClient {
 	constructor(Vue, options) {
+		const host = process.env.NODE_ENV === 'development' ? `127.0.0.1:34453` : location.host
+
 		this.vue = Vue;
 		this.options = {
-			url: `ws://127.0.0.1:8080/v1/websocket`,
+			url: `ws://${host}/v1/websocket`,
 			...options
 		};
 

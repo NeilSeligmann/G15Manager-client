@@ -13,7 +13,8 @@ const CATEGORIES = {
 }
 
 const SYSTEM_MESSAGES = {
-	info: 0
+	INFO: 0,
+	UPDATE_CLIENT: 1
 }
 
 const THERMAL_ACTIONS = {
@@ -89,7 +90,6 @@ class ManagerClient {
 
 	onWebsocketOpen() {
 		console.log('WS: On Open!')
-		// this.ws.send('TEST!')
 
 		if (this.reconnect.interval) {
 			clearInterval(this.reconnect.interval);
@@ -249,6 +249,14 @@ class ManagerClient {
 				action,
 				value: String(value)
 			}))
+		})
+	}
+
+	// System
+	updateClient() {
+		return this.sendMessage({
+			category: CATEGORIES.SYSTEM,
+			action: SYSTEM_MESSAGES.UPDATE_CLIENT
 		})
 	}
 

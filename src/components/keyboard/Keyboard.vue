@@ -17,11 +17,10 @@
 		<h3>ROG Key</h3>
 		<div class="subtitle-2">Pressing multiple times the ROG key will open the application in that slot.</div>
 		<v-list>
-			<draggable v-model="rogItems"
-				group="people">
+			<draggable v-model="rogItems">
 				<!-- ROG Items -->
 				<v-list-item v-for="(item, i) in rogItems"
-					:key="rogItems[i]"
+					:key="i"
 					class="rog-item-container">
 					<v-list-item-content>
 						<v-list-item-title class="rog-item">

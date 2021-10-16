@@ -35,6 +35,20 @@
 		<v-card-text v-if="isEditing">
 			<v-row>
 				<v-col>
+					<v-text-field
+						label="Windows Power Plan"
+						v-model="pendingChanges.windowsPowerPlan"
+					/>
+				</v-col>
+				<v-col>
+					<v-select v-model="pendingChanges.throttlePlan"
+						label="Throttle Plan"
+						:items="throttlePlans" />
+				</v-col>
+			</v-row>
+
+			<v-row>
+				<v-col>
 					<!-- CPU Fan Curve -->
 					<v-text-field label="CPU Fan Curve" v-model="pendingChanges.cpuFanCurve" />
 					<ProfileChart v-model="pendingChanges.cpuFanCurve" :current="temperatures.cpu" />
@@ -61,6 +75,7 @@
 				</v-chip>
 			</div>
 
+			<!-- Labels -->
 			<v-row>
 				<v-col>
 					<div>
@@ -69,7 +84,7 @@
 					</div>
 					<div>
 						<b>Throttle Plan:</b>
-						{{ profile.throttlePlan }}
+						{{ getThrottlePlanName(profile.throttlePlan) }}
 					</div>
 					<div v-if="!showFanCurves">
 						<b>CPU Fan Curve:</b>
@@ -81,6 +96,8 @@
 					</div>
 				</v-col>
 			</v-row>
+
+			<!-- Fan Curves -->
 			<v-row v-if="showFanCurves">
 				<!-- Preview Charts -->
 				<v-col>
@@ -133,7 +150,7 @@ export default {
 				name: 'NAME',
 				fastSwitch: true,
 				throttlePlans: 0,
-				windowsPowerPlan: 0,
+				windowsPowerPlan: '',
 				cpuFanCurve: '',
 				gpuFanCurve: '',
 			}
@@ -143,6 +160,22 @@ export default {
 	computed: {
 		temperatures() {
 			return this.$client.state.temperatures;
+		},
+		throttlePlans() {
+			return [
+				{
+					text: 'Performance',
+					value: 0
+				},
+				{
+					text: 'Turbo',
+					value: 1
+				},
+				{
+					text: 'Silent',
+					value: 2
+				}
+			]
 		}
 	},
 
@@ -173,6 +206,12 @@ export default {
 			await this.$client.addModifyProfile(this.index, this.pendingChanges);
 			this.isSaving = false;
 			this.isEditing = false;
+		},
+		getThrottlePlanName(val) {
+			const plan = this.throttlePlans[val];
+			if (plan) return plan.text;
+
+			return val;
 		}
 	}
 }

@@ -40,7 +40,7 @@ export default {
 	},
 
 	data: () => ({
-		showFanCurves: true
+		showFanCurves: false
 	}),
 
 	computed: {

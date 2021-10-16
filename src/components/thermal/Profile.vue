@@ -1,7 +1,16 @@
 <template>
 	<v-card elevation="4">
 		<v-card-title class="pb-0">
-			<span class="profile-name">{{ profile.name }}</span>
+			<v-switch :input-value="isActive"
+				:readonly="isActive"
+				class="profile-switch"
+				@click="setProfile" />
+
+			<span class="profile-name">
+				{{ profile.name }}
+			</span>
+
+			<!-- Top Right -->
 			<v-btn
 				v-if="isEditing"
 				class="profile-save-btn"
@@ -11,6 +20,7 @@
 				<v-icon left>mdi-content-save</v-icon>
 				Save
 			</v-btn>
+
 			<v-btn
 				class="profile-edit-btn"
 				:class="{ 'is-editing': isEditing }"
@@ -20,6 +30,7 @@
 				{{ isEditing ? 'Cancel' : 'Edit' }}
 			</v-btn>
 		</v-card-title>
+
 		<!-- Editing -->
 		<v-card-text v-if="isEditing">
 			<v-row>
@@ -35,6 +46,7 @@
 				</v-col>
 			</v-row>
 		</v-card-text>
+
 		<!-- Non-editing -->
 		<v-card-text v-else>
 			<!-- Chips -->
@@ -167,6 +179,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+	.profile-switch {
+		padding-top: 0;
+		margin-top: 0;
+		height: 23px;
+
+		&::v-deep {
+			.v-input__control {
+				height: inherit;
+			}
+		}
+	}
+
+	.profile-name {
+		min-width: 100px
+	}
+
 	.profile-save-btn {
 		margin-left: auto;
 		margin-right: 1rem;

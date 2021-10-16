@@ -82,7 +82,11 @@ class ManagerClient {
 			// 1 -> Connected
 			// 2 -> Reconnecting
 			status: -1,
-			configInfo: {}
+			configInfo: {},
+			temperatues: {
+				gpu: null,
+				cpu: null,
+			}
 		})
 	}
 
@@ -159,6 +163,10 @@ class ManagerClient {
 		switch (parsed.action) {
 			case 0:
 				this.state.configInfo = parsed.data
+				break;
+
+			case 1:
+				this.state.temperatues = parsed.data
 				break;
 
 			default:

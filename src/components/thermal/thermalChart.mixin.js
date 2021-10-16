@@ -5,6 +5,10 @@ export default {
 		value: {
 			type: String,
 			required: true
+		},
+		current: {
+			type: Number,
+			default: null
 		}
 	},
 	data: () => ({
@@ -14,13 +18,35 @@ export default {
 		chartSymbolSize() {
 			return 20;
 		},
+		markLine() {
+			if (!this.current) return null
+
+			return {
+				symbol: false,
+				silent: true,
+				label: {
+					color: '#ff0000',
+					distance: 2
+				},
+				data: [
+					{
+						name: 'Current Temperature',
+						xAxis: this.current,
+						lineStyle: {
+							color: '#ff0000'
+						}
+					},
+				]
+			}
+		},
 		chartSeries() {
 			return {
 				id: 'a',
 				smooth: false,
 				type: 'line',
 				symbolSize: this.chartSymbolSize,
-				data: this.chartData
+				data: this.chartData,
+				markLine: this.markLine
 			};
 		},
 	},
@@ -28,6 +54,9 @@ export default {
 		value() {
 			this.updateDataFromModel();
 		},
+		current() {
+			this.updateChart();
+		}
 	},
 	mounted() {
 	},

@@ -83,7 +83,7 @@ class ManagerClient {
 			// 2 -> Reconnecting
 			status: -1,
 			configInfo: {},
-			temperatues: {
+			temperatures: {
 				gpu: null,
 				cpu: null,
 			}
@@ -129,13 +129,6 @@ class ManagerClient {
 		// Reset skipped hearbeats counter
 		this.heartbeat.skipped = 0;
 
-		// console.log('onWebsocketMessage', message)
-
-		if (message.data === 'alive') {
-			// console.log('alive')
-			return;
-		}
-
 		if (typeof message.data === 'string' && message.data.includes('ack ')) {
 			const id = message.data.replace('ack ', '');
 			const pendingAck = this.pendingAcks.get(id);
@@ -149,11 +142,7 @@ class ManagerClient {
 			return;
 		}
 
-		// console.log('WS: On Message!')
-		// console.log(message)
-
 		const parsed = JSON.parse(message.data);
-		// console.log(parsed);
 
 		if (!parsed || typeof parsed.action !== 'number') {
 			console.error('Invalid response!')
@@ -162,11 +151,15 @@ class ManagerClient {
 
 		switch (parsed.action) {
 			case 0:
-				this.state.configInfo = parsed.data
+				// Alive!
 				break;
 
 			case 1:
-				this.state.temperatues = parsed.data
+				this.state.configInfo = parsed.data
+				break;
+
+			case 2:
+				this.state.temperatures = parsed.data
 				break;
 
 			default:

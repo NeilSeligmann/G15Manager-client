@@ -20,7 +20,8 @@ import {
 import {
 	GridComponent,
 	TooltipComponent,
-	GraphicComponent
+	GraphicComponent,
+	MarkLineComponent
 } from 'echarts/components'
 
 use([
@@ -28,7 +29,8 @@ use([
 	LineChart,
 	GridComponent,
 	TooltipComponent,
-	GraphicComponent
+	GraphicComponent,
+	MarkLineComponent
 ]);
 
 Vue.component('v-chart', ECharts)

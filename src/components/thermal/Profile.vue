@@ -26,12 +26,12 @@
 				<v-col>
 					<!-- CPU Fan Curve -->
 					<v-text-field label="CPU Fan Curve" v-model="pendingChanges.cpuFanCurve" />
-					<ProfileChart v-model="pendingChanges.cpuFanCurve" />
+					<ProfileChart v-model="pendingChanges.cpuFanCurve" :current="temperatures.cpu" />
 				</v-col>
 				<v-col>
 					<!-- GPU Fan Curve -->
 					<v-text-field label="GPU Fan Curve" v-model="pendingChanges.gpuFanCurve" />
-					<ProfileChart v-model="pendingChanges.gpuFanCurve" />
+					<ProfileChart v-model="pendingChanges.gpuFanCurve" :current="temperatures.gpu" />
 				</v-col>
 			</v-row>
 		</v-card-text>
@@ -72,10 +72,10 @@
 			<v-row v-if="showFanCurves">
 				<!-- Preview Charts -->
 				<v-col>
-					<ProfileChartPreview :value="profile.cpuFanCurve" />
+					<ProfileChartPreview :value="profile.cpuFanCurve" :current="temperatures.cpu" />
 				</v-col>
 				<v-col>
-					<ProfileChartPreview :value="profile.gpuFanCurve" />
+					<ProfileChartPreview :value="profile.gpuFanCurve" :current="temperatures.gpu" />
 				</v-col>
 			</v-row>
 		</v-card-text>
@@ -129,6 +129,9 @@ export default {
 	},
 
 	computed: {
+		temperatures() {
+			return this.$client.state.temperatures;
+		}
 	},
 
 	watch: {

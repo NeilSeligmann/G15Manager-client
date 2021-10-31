@@ -7,7 +7,7 @@
 						<div class="version-title">{{name}} Version</div>
 						<div class="version-display">
 							<span>{{ data.currentVersion }}</span>
-							<v-icon v-if="isUpdateAvailable"
+							<v-icon v-if="isAvailable"
 								class="ml-1 mr-1"
 								small
 								color="green">
@@ -25,6 +25,9 @@
 								:loading="loading"
 								@click="onClick">
 								{{ btnText || 'Update!' }}
+							</v-btn>
+							<v-btn v-else disabled>
+								Latest
 							</v-btn>
 						</div>
 					</v-col>

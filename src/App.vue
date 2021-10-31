@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import '@mdi/font/scss/materialdesignicons.scss'
+
 import General from './components/general/General';
 import Thermal from './components/thermal/Thermal';
 import Keyboard from './components/keyboard/Keyboard';

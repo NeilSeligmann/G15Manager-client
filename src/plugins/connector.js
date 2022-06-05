@@ -94,8 +94,12 @@ class ManagerClient {
 	// Events
 	// ---------
 
+	log(args) {
+		console.log('WS', args);
+	}
+
 	onWebsocketOpen() {
-		console.log('WS: On Open!')
+		this.log('On Open!')
 
 		if (this.reconnect.interval) {
 			clearInterval(this.reconnect.interval);
@@ -111,7 +115,7 @@ class ManagerClient {
 	}
 
 	onWebsocketClose() {
-		console.log('WS: On Close!')
+		this.log('On Close!')
 		this.state.status = -1;
 
 		if (this.reconnect.shouldReconnect) {
@@ -120,7 +124,7 @@ class ManagerClient {
 	}
 
 	onWebsocketError(error) {
-		console.log('WS: On Error!')
+		this.log('On Error!')
 		console.error(error)
 		this.clearHeartbeat();
 	}
@@ -183,6 +187,7 @@ class ManagerClient {
 		this.terminate();
 		this.state.status = 0;
 
+		this.log('Attempting to connect to address:', this.host);
 		this.ws = new WebSocket(this.options.url);
 		this.ws.onopen = this.onWebsocketOpen.bind(this);
 		this.ws.onclose = this.onWebsocketClose.bind(this);
@@ -191,7 +196,7 @@ class ManagerClient {
 	}
 
 	terminate() {
-		console.log('Terminate WS!')
+		this.log('Terminate WS!')
 
 		this.state.status = -1;
 		// this.reconnect.shouldReconnect = !clean;

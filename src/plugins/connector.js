@@ -51,11 +51,14 @@ const AIDENOISE_ACTIONS = {
 
 class ManagerClient {
 	constructor(Vue, options) {
-		const host = process.env.NODE_ENV === 'development' ? `127.0.0.1:34453` : location.host
+		this.host = location.host;
+
+		// If in devlopment or invalid host, fallback to 127.0.0.1
+		if ((!this.host || this.host.length < 2) || process.env.NODE_ENV === 'development') this.host = `127.0.0.1:34453`;
 
 		this.vue = Vue;
 		this.options = {
-			url: `ws://${host}/v1/websocket`,
+			url: `ws://${this.host}/v1/websocket`,
 			...options
 		};
 
@@ -94,8 +97,8 @@ class ManagerClient {
 	// Events
 	// ---------
 
-	log(args) {
-		console.log('WS', args);
+	log(...args) {
+		console.log('WS', ...args);
 	}
 
 	onWebsocketOpen() {
@@ -187,7 +190,7 @@ class ManagerClient {
 		this.terminate();
 		this.state.status = 0;
 
-		this.log('Attempting to connect to address:', this.host);
+		this.log('Attempting to connect to address:', this.options.url);
 		this.ws = new WebSocket(this.options.url);
 		this.ws.onopen = this.onWebsocketOpen.bind(this);
 		this.ws.onclose = this.onWebsocketClose.bind(this);
